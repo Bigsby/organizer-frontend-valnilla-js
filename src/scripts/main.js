@@ -14,11 +14,11 @@ const routes = {
         }
     ],
     default: "/",
-    getDefault: function() {
+    getDefault: function () {
         const thisDefault = this.default;
         return this.configs.find(c => c.path === thisDefault);
     },
-    getRoute: function(route){
+    getRoute: function (route) {
         let foundConfig = this.getDefault();
         this.configs.forEach(c => {
             if (route.startsWith(c.path)) {
@@ -29,25 +29,19 @@ const routes = {
     }
 };
 let mainContainer;
-const templateCache = {};
 
-function getTemplate(template, callback) {
-    const cachedTemplate = templateCache[template];
-    if (cachedTemplate) {
-        callback(cachedTemplate);
-    } else {
-        fetch("templates/" + template + ".html").then(response => {
-            response.text().then(textResponse => callback(templateCache[template] = textResponse));
-        });
-    }
-}
-
-function handleNavigation(hash) {
+async function handleNavigation(hash) {
+    mainContainer.innerHTML = "";
     const config = routes.getRoute(hash.substring(1));
-    getTemplate(config.template, template => {
-        mainContainer.innerHTML = template;
-    });
-    // mainContainer.innerText = config.template;
+    const template = await window.services.templates.get(config.template);
+    
+    mainContainer.appendChild(template);
+    const vmClassName = config.vm || config.template;
+    const vmClass = eval(vmClassName);
+    if (vmClass) {
+        vm = new vmClass(template, window.services);
+        await vm.initialize();
+    }
 }
 
 function initialize() {
@@ -60,6 +54,36 @@ function initialize() {
         mainContainer = document.querySelector("#mainContainer");
         handleNavigation(window.location.hash);
     });
+
+    window.services = {};
+    window.services.templates = new templateService();
 }
 
 initialize();
+
+class vm {
+    constructor(container, services) {
+        this.container = container;
+        this.services = services;
+    }
+
+    getService(service) {
+        return this.services[service];
+    }
+
+    getTemplate(template) {
+        return this.services.templates.get(template);
+    }
+
+    getElement(query) {
+        return this.container.querySelector(query);
+    }
+
+    getElements(query) {
+        return this.container.querySelectorAll(query);
+    }
+
+    async initialize() {
+        this.innerInitialize && await this.innerInitialize();
+    }
+}

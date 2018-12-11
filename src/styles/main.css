@@ -9,3 +9,46 @@ html, body {
 a, a:visited {
     color: #e0e0e0;
 }
+
+#monthsContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.monthContainer {
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+    /* border-top: solid 1px #505050;
+    border-bottom: solid 1px #505050; */
+}
+
+.monthName {
+    width: 80px;
+}
+
+.weekDaysContainer {
+    display: flex;
+}
+
+.weeksContainer {
+    display: flex;
+}
+
+.day {
+    width: 20px;
+    text-align: center;
+}
+
+.day.week {
+    font-size: .625rem;
+}
+
+.day.today {
+    color: red;
+}
+
+.day.weekend {
+    background-color: #505050;
+}

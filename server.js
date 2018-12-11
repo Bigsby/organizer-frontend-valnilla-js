@@ -2,6 +2,7 @@ const path = require("path");
 const http = require("http");
 const fs = require("fs");
 
+const PORT = 8080;
 const basePath = path.join(__dirname, "src");
 const defaultDocument = "index.html";
 const mimeTypes = {
@@ -33,4 +34,5 @@ http.createServer(function(req, res) {
         res.writeHead(404);
         res.end();
     }
-}).listen(8080);
+}).listen(PORT);
+console.log(`Listening on http://localhost:${PORT}`);
